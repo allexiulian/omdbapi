@@ -1,33 +1,25 @@
 package util;
 
 import java.io.IOException;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 public final class ConnectionCheck {
 
     public static final ConnectionCheck ins = new ConnectionCheck();
+    CloseableHttpClient httpClient = HttpClients.createDefault();
+    CloseableHttpResponse response = null;
 
-    public HttpEntity check(CloseableHttpClient httpClient, String search) {
-
+    public int checkStatus(StringBuilder search) throws IOException {
         HttpGet request = new HttpGet("https://www.omdbapi.com/?apikey=53dd328" + search);
-        CloseableHttpResponse response;
-        try {
-            response = httpClient.execute(request);
-            int status = response.getStatusLine().getStatusCode();
-            if (status != 200) {
-                System.out.println("Bad status code: " + status);
-                return null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return response.getEntity();
+        response = httpClient.execute(request);
+        return response.getStatusLine().getStatusCode();
     }
 
+    public HttpEntity getEntity() {
+        return this.response.getEntity();
+    }
 }
